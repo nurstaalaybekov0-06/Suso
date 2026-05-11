@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>СУСО | Авторизация</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="auth-page">
+<main class="auth-layout">
+    <section class="auth-visual">
+        <div class="auth-visual__glow"></div>
+        <div class="auth-visual__content">
+            <a class="back-link" th:href="@{/}">На главную</a>
+            <span class="eyebrow">Welcome Back</span>
+            <h1>Авторизация в системе общежития</h1>
+            <p>
+                Войдите в личный кабинет, чтобы управлять комнатой, платежами, заявками и уведомлениями.
+            </p>
+            <div class="auth-feature-list">
+                <div>Контроль платежей и задолженностей</div>
+                <div>Быстрая подача и обработка заявок</div>
+                <div>Ролевой доступ для студентов и сотрудников</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel auth-form-card">
+        <div class="panel-heading">
+            <span class="panel-kicker">Быстрый вход</span>
+            <h2>Войти в систему</h2>
+        </div>
+
+        <div class="info-banner success" th:if="${message}" th:text="${message}"></div>
+        <div class="info-banner danger" th:if="${error}" th:text="${error}"></div>
+
+        <form method="post" action="/login">
+            <label>
+                Email
+                <input type="email" name="email" placeholder="student@dorm.kg" required>
+            </label>
+            <label>
+                Пароль
+                <input type="password" name="password" placeholder="Введите пароль" required>
+            </label>
+            <button type="submit">Открыть кабинет</button>
+        </form>
+
+        <div class="inline-link-row">
+            <span>Нет аккаунта?</span>
+            <a class="text-tab-link" th:href="@{/register}">Перейти к регистрации</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>СУСО | Регистрация</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="auth-page auth-page--warm">
+<main class="auth-layout">
+    <section class="auth-visual auth-visual--warm">
+        <div class="auth-visual__glow"></div>
+        <div class="auth-visual__content">
+            <a class="back-link" th:href="@{/}">На главную</a>
+            <span class="eyebrow">Create Account</span>
+            <h1>Регистрация студента</h1>
+            <p>
+                Создайте аккаунт, чтобы подать заявку на заселение, отслеживать комнату и управлять своими обращениями.
+            </p>
+            <div class="auth-feature-list">
+                <div>Онлайн-регистрация без бумажной волокиты</div>
+                <div>История платежей и уведомлений в одном кабинете</div>
+                <div>Быстрый старт в системе общежития</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel auth-form-card">
+        <div class="panel-heading">
+            <span class="panel-kicker">Новый аккаунт</span>
+            <h2>Создать профиль</h2>
+        </div>
+
+        <div class="info-banner success" th:if="${message}" th:text="${message}"></div>
+        <div class="info-banner danger" th:if="${error}" th:text="${error}"></div>
+
+        <form method="post" action="/register">
+            <label>
+                ФИО
+                <input type="text" name="fullName" placeholder="Нурсултан Таалайбеков" required>
+            </label>
+            <label>
+                Email
+                <input type="email" name="email" placeholder="example@mail.com" required>
+            </label>
+            <label>
+                Пароль
+                <input type="password" name="password" minlength="6" placeholder="Минимум 6 символов" required>
+            </label>
+            <label>
+                Группа
+                <input type="text" name="groupName" placeholder="ПИ(б)-3-24" required>
+            </label>
+            <label>
+                Телефон
+                <input type="text" name="phone" placeholder="+996..." required>
+            </label>
+            <button type="submit">Создать аккаунт</button>
+        </form>
+
+        <div class="inline-link-row">
+            <span>Уже есть аккаунт?</span>
+            <a class="text-tab-link" th:href="@{/login}">Перейти к авторизации</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

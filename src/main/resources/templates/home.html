@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>СУСО | Управление общежитием</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="landing-page">
+<main class="landing-shell landing-shell--single">
+    <section class="landing-hero landing-hero--full">
+        <div class="hero-backdrop"></div>
+        <div class="hero-copy">
+            <span class="eyebrow">Student Housing Platform</span>
+            <h1>Система управления студенческим общежитием</h1>
+            <p class="hero-lead">
+                Удобный цифровой кабинет для студентов, коменданта и технического персонала:
+                заселение, комнаты, платежи, заявки и уведомления в одном месте.
+            </p>
+
+            <div class="info-banner success" th:if="${message}" th:text="${message}"></div>
+            <div class="info-banner danger" th:if="${error}" th:text="${error}"></div>
+
+            <div class="hero-actions">
+                <a class="hero-action" th:href="@{/login}">Авторизация</a>
+                <a class="hero-action hero-action--ghost" th:href="@{/register}">Регистрация</a>
+            </div>
+
+            <div class="credential-list credential-list--compact">
+                <div>
+                    <strong>Комендант</strong>
+                    <span>commandant@dorm.kg / commandant123</span>
+                </div>
+                <div>
+                    <strong>Техперсонал</strong>
+                    <span>tech@dorm.kg / tech123</span>
+                </div>
+                <div>
+                    <strong>Студент</strong>
+                    <span>student@dorm.kg / student123</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>
