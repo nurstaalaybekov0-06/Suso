@@ -16,9 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.time.Year;
 
 @Controller
 public class WebController {
+
+    private static final String SESSION_CARD_MASK = "studentCardMask";
+    private static final String SESSION_CARD_EXPIRY = "studentCardExpiry";
 
     private final AuthService authService;
     private final PortalService portalService;
@@ -125,6 +129,8 @@ public class WebController {
                 model.addAttribute("requests", portalService.getStudentRequests(user));
                 model.addAttribute("rooms", portalService.getAllRooms());
                 model.addAttribute("occupancyByRoomId", portalService.getRoomOccupancy());
+                model.addAttribute("boundCardMask", session.getAttribute(SESSION_CARD_MASK));
+                model.addAttribute("boundCardExpiry", session.getAttribute(SESSION_CARD_EXPIRY));
             } else if (user.getRole() == Role.TECH_STAFF) {
                 model.addAttribute("requests", portalService.getRequestsForStaff(user));
             } else if (user.getRole() == Role.COMMANDANT) {
@@ -160,6 +166,43 @@ public class WebController {
         return "redirect:/dashboard";
     }
 
+    @PostMapping("/student/card")
+    public String bindCard(@RequestParam String cardNumber,
+                           @RequestParam Integer expiryMonth,
+                           @RequestParam Integer expiryYear,
+                           @RequestParam String cvc,
+                           HttpSession session,
+                           RedirectAttributes redirectAttributes) {
+        try {
+            authService.requireRole(session, Role.STUDENT);
+            String normalizedCardNumber = normalizeCardNumber(cardNumber);
+            validateCard(normalizedCardNumber, expiryMonth, expiryYear, cvc);
+            session.setAttribute(SESSION_CARD_MASK, maskCard(normalizedCardNumber));
+            session.setAttribute(SESSION_CARD_EXPIRY, String.format("%02d/%d", expiryMonth, expiryYear));
+            redirectAttributes.addAttribute("message", "Карта привязана. Теперь можно оплатить проживание.");
+            redirectAttributes.addAttribute("section", "payments");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addAttribute("error", ex.getMessage());
+            redirectAttributes.addAttribute("section", "payments");
+        }
+        return "redirect:/dashboard";
+    }
+
+    @PostMapping("/student/card/delete")
+    public String deleteCard(HttpSession session, RedirectAttributes redirectAttributes) {
+        try {
+            authService.requireRole(session, Role.STUDENT);
+            session.removeAttribute(SESSION_CARD_MASK);
+            session.removeAttribute(SESSION_CARD_EXPIRY);
+            redirectAttributes.addAttribute("message", "Карта удалена. Можно привязать новую карту.");
+            redirectAttributes.addAttribute("section", "payments");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addAttribute("error", ex.getMessage());
+            redirectAttributes.addAttribute("section", "payments");
+        }
+        return "redirect:/dashboard";
+    }
+
     @PostMapping("/student/payments")
     public String createPayment(@RequestParam BigDecimal amount,
                                 @RequestParam String description,
@@ -167,6 +210,9 @@ public class WebController {
                                 RedirectAttributes redirectAttributes) {
         try {
             UserAccount student = authService.requireRole(session, Role.STUDENT);
+            if (session.getAttribute(SESSION_CARD_MASK) == null) {
+                throw new IllegalArgumentException("Сначала привяжите банковскую карту.");
+            }
             portalService.registerPayment(student, amount, description);
             redirectAttributes.addAttribute("message", "Оплата успешно зафиксирована.");
             redirectAttributes.addAttribute("section", "payments");
@@ -175,6 +221,50 @@ public class WebController {
             redirectAttributes.addAttribute("section", "payments");
         }
         return "redirect:/dashboard";
+    }
+
+    private String normalizeCardNumber(String cardNumber) {
+        return cardNumber == null ? "" : cardNumber.replaceAll("[\\s-]", "");
+    }
+
+    private void validateCard(String cardNumber, Integer expiryMonth, Integer expiryYear, String cvc) {
+        if (!cardNumber.matches("\\d{16}")) {
+            throw new IllegalArgumentException("Введите номер карты из 16 цифр.");
+        }
+        if (!isValidLuhn(cardNumber)) {
+            throw new IllegalArgumentException("Номер карты введен неверно.");
+        }
+        if (expiryMonth == null || expiryMonth < 1 || expiryMonth > 12) {
+            throw new IllegalArgumentException("Введите корректный месяц действия карты.");
+        }
+        int currentYear = Year.now().getValue();
+        if (expiryYear == null || expiryYear < currentYear || expiryYear > currentYear + 20) {
+            throw new IllegalArgumentException("Введите корректный год действия карты.");
+        }
+        if (cvc == null || !cvc.matches("\\d{3,4}")) {
+            throw new IllegalArgumentException("Введите CVC из 3 или 4 цифр.");
+        }
+    }
+
+    private boolean isValidLuhn(String cardNumber) {
+        int sum = 0;
+        boolean doubleDigit = false;
+        for (int i = cardNumber.length() - 1; i >= 0; i--) {
+            int digit = cardNumber.charAt(i) - '0';
+            if (doubleDigit) {
+                digit *= 2;
+                if (digit > 9) {
+                    digit -= 9;
+                }
+            }
+            sum += digit;
+            doubleDigit = !doubleDigit;
+        }
+        return sum % 10 == 0;
+    }
+
+    private String maskCard(String cardNumber) {
+        return "**** **** **** " + cardNumber.substring(cardNumber.length() - 4);
     }
 
     @PostMapping("/staff/requests/{requestId}/status")

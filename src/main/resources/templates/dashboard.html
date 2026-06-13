@@ -171,11 +171,11 @@
                         </thead>
                         <tbody>
                         <tr th:each="room : ${rooms}">
-                            <td th:text="${room.roomNumber}"></td>
-                            <td th:text="${room.building}"></td>
-                            <td th:text="${room.capacity}"></td>
-                            <td th:text="${occupancyByRoomId[room.id]}"></td>
-                            <td th:text="${room.status}"></td>
+                            <td data-label="Комната" th:text="${room.roomNumber}"></td>
+                            <td data-label="Корпус" th:text="${room.building}"></td>
+                            <td data-label="Мест" th:text="${room.capacity}"></td>
+                            <td data-label="Занято" th:text="${occupancyByRoomId[room.id]}"></td>
+                            <td data-label="Статус" th:text="${room.status}"></td>
                         </tr>
                         </tbody>
                     </table>
@@ -191,6 +191,44 @@
             <div class="overview-grid">
                 <article class="panel">
                     <h3>Оплата проживания</h3>
+                    <div class="bound-card" th:if="${boundCardMask != null}">
+                        <div>
+                            <span>Привязанная карта</span>
+                            <strong th:text="${boundCardMask}"></strong>
+                            <small th:text="${'Действует до ' + boundCardExpiry}"></small>
+                        </div>
+                        <form class="card-delete-form" method="post" action="/student/card/delete">
+                            <button class="secondary" type="submit">Удалить карту</button>
+                        </form>
+                    </div>
+                    <form class="card-bind-form" method="post" action="/student/card" th:if="${boundCardMask == null}">
+                        <h4>Привязать карту</h4>
+                        <label>
+                            Номер карты
+                            <input type="text"
+                                   name="cardNumber"
+                                   inputmode="numeric"
+                                   autocomplete="cc-number"
+                                   maxlength="19"
+                                   placeholder="0000 0000 0000 0000"
+                                   required>
+                        </label>
+                        <div class="card-fields">
+                            <label>
+                                Месяц
+                                <input type="number" min="1" max="12" name="expiryMonth" placeholder="MM" required>
+                            </label>
+                            <label>
+                                Год
+                                <input type="number" min="2026" max="2046" name="expiryYear" placeholder="YYYY" required>
+                            </label>
+                            <label>
+                                CVC
+                                <input type="password" inputmode="numeric" maxlength="4" name="cvc" placeholder="123" required>
+                            </label>
+                        </div>
+                        <button type="submit">Привязать карту</button>
+                    </form>
                     <form method="post" action="/student/payments">
                         <label>
                             Сумма
@@ -200,7 +238,7 @@
                             Назначение
                             <input type="text" name="description" value="Онлайн-оплата проживания" required>
                         </label>
-                        <button type="submit">Оплатить</button>
+                        <button type="submit" th:disabled="${boundCardMask == null}">Оплатить</button>
                     </form>
                 </article>
 
@@ -218,10 +256,10 @@
                             </thead>
                             <tbody>
                             <tr th:each="payment : ${payments}">
-                                <td th:text="${#temporals.format(payment.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
-                                <td th:text="${payment.description}"></td>
-                                <td th:text="${payment.amount + ' сом'}"></td>
-                                <td th:text="${payment.status}"></td>
+                                <td data-label="Дата" th:text="${#temporals.format(payment.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
+                                <td data-label="Описание" th:text="${payment.description}"></td>
+                                <td data-label="Сумма" th:text="${payment.amount + ' сом'}"></td>
+                                <td data-label="Статус" th:text="${payment.status}"></td>
                             </tr>
                             </tbody>
                         </table>
@@ -274,11 +312,11 @@
                             </thead>
                             <tbody>
                             <tr th:each="request : ${requests}">
-                                <td th:text="${#temporals.format(request.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
-                                <td th:text="${request.title}"></td>
-                                <td th:text="${request.type}"></td>
-                                <td th:text="${request.status}"></td>
-                                <td th:text="${request.assignedStaff != null ? request.assignedStaff.fullName : 'Не назначен'}"></td>
+                                <td data-label="Дата" th:text="${#temporals.format(request.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
+                                <td data-label="Тема" th:text="${request.title}"></td>
+                                <td data-label="Тип" th:text="${request.type}"></td>
+                                <td data-label="Статус" th:text="${request.status}"></td>
+                                <td data-label="Исполнитель" th:text="${request.assignedStaff != null ? request.assignedStaff.fullName : 'Не назначен'}"></td>
                             </tr>
                             </tbody>
                         </table>
@@ -306,11 +344,11 @@
                         </thead>
                         <tbody>
                         <tr th:each="request : ${requests}">
-                            <td th:text="${request.student.fullName}"></td>
-                            <td th:text="${request.title}"></td>
-                            <td th:text="${request.type}"></td>
-                            <td th:text="${request.status}"></td>
-                            <td>
+                            <td data-label="Студент" th:text="${request.student.fullName}"></td>
+                            <td data-label="Тема" th:text="${request.title}"></td>
+                            <td data-label="Тип" th:text="${request.type}"></td>
+                            <td data-label="Статус" th:text="${request.status}"></td>
+                            <td data-label="Действие">
                                 <form th:action="@{'/staff/requests/' + ${request.id} + '/status'}" method="post" class="inline-form">
                                     <select name="status">
                                         <option value="IN_PROGRESS">IN_PROGRESS</option>
@@ -344,10 +382,10 @@
                         </thead>
                         <tbody>
                         <tr th:each="student : ${students}">
-                            <td th:text="${student.fullName}"></td>
-                            <td th:text="${student.groupName}"></td>
-                            <td th:text="${student.currentRoom != null ? student.currentRoom.roomNumber : 'Не заселен'}"></td>
-                            <td>
+                            <td data-label="Студент" th:text="${student.fullName}"></td>
+                            <td data-label="Группа" th:text="${student.groupName}"></td>
+                            <td data-label="Комната" th:text="${student.currentRoom != null ? student.currentRoom.roomNumber : 'Не заселен'}"></td>
+                            <td data-label="Назначить">
                                 <form th:action="@{'/commandant/students/' + ${student.id} + '/assign-room'}" method="post" class="inline-form">
                                     <select name="roomId">
                                         <option th:each="room : ${rooms}" th:value="${room.id}" th:text="${room.roomNumber + ' / ' + room.building}"></option>
@@ -412,13 +450,13 @@
                             </thead>
                             <tbody>
                             <tr th:each="room : ${rooms}">
-                                <td th:text="${room.roomNumber}"></td>
-                                <td th:text="${room.building}"></td>
-                                <td th:text="${room.floorNumber}"></td>
-                                <td th:text="${room.capacity}"></td>
-                                <td th:text="${occupancyByRoomId[room.id]}"></td>
-                                <td th:text="${room.monthlyFee + ' сом'}"></td>
-                                <td th:text="${room.status}"></td>
+                                <td data-label="Комната" th:text="${room.roomNumber}"></td>
+                                <td data-label="Корпус" th:text="${room.building}"></td>
+                                <td data-label="Этаж" th:text="${room.floorNumber}"></td>
+                                <td data-label="Вместимость" th:text="${room.capacity}"></td>
+                                <td data-label="Занято" th:text="${occupancyByRoomId[room.id]}"></td>
+                                <td data-label="Оплата" th:text="${room.monthlyFee + ' сом'}"></td>
+                                <td data-label="Статус" th:text="${room.status}"></td>
                             </tr>
                             </tbody>
                         </table>
@@ -446,11 +484,11 @@
                         </thead>
                         <tbody>
                         <tr th:each="request : ${requests}">
-                            <td th:text="${request.student.fullName}"></td>
-                            <td th:text="${request.title}"></td>
-                            <td th:text="${request.status}"></td>
-                            <td th:text="${request.assignedStaff != null ? request.assignedStaff.fullName : 'Не назначен'}"></td>
-                            <td class="action-cell">
+                            <td data-label="Студент" th:text="${request.student.fullName}"></td>
+                            <td data-label="Тема" th:text="${request.title}"></td>
+                            <td data-label="Статус" th:text="${request.status}"></td>
+                            <td data-label="Исполнитель" th:text="${request.assignedStaff != null ? request.assignedStaff.fullName : 'Не назначен'}"></td>
+                            <td data-label="Действия" class="action-cell">
                                 <form th:action="@{'/commandant/requests/' + ${request.id} + '/assign'}" method="post" class="inline-form">
                                     <select name="staffId">
                                         <option th:each="member : ${staff}" th:value="${member.id}" th:text="${member.fullName}"></option>
@@ -492,11 +530,11 @@
                         </thead>
                         <tbody>
                         <tr th:each="payment : ${payments}">
-                            <td th:text="${payment.student.fullName}"></td>
-                            <td th:text="${payment.description}"></td>
-                            <td th:text="${payment.amount + ' сом'}"></td>
-                            <td th:text="${payment.status}"></td>
-                            <td th:text="${#temporals.format(payment.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
+                            <td data-label="Студент" th:text="${payment.student.fullName}"></td>
+                            <td data-label="Описание" th:text="${payment.description}"></td>
+                            <td data-label="Сумма" th:text="${payment.amount + ' сом'}"></td>
+                            <td data-label="Статус" th:text="${payment.status}"></td>
+                            <td data-label="Дата" th:text="${#temporals.format(payment.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
                         </tr>
                         </tbody>
                     </table>

@@ -22,6 +22,10 @@
     box-sizing: border-box;
 }
 
+html {
+    min-width: 320px;
+}
+
 body {
     margin: 0;
     font-family: "Trebuchet MS", "Segoe UI", sans-serif;
@@ -32,6 +36,8 @@ body {
         radial-gradient(circle at bottom center, rgba(243, 199, 168, 0.45), transparent 26%),
         linear-gradient(145deg, #fff6eb 0%, var(--bg) 42%, var(--bg-accent) 100%);
     min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
 }
 
 .landing-page {
@@ -47,6 +53,7 @@ body {
 .auth-layout {
     width: min(1200px, 100%);
     margin: 0 auto;
+    min-width: 0;
 }
 
 .dashboard-layout {
@@ -96,6 +103,7 @@ body {
     max-width: 760px;
     padding: 56px;
     color: #fff7ef;
+    min-width: 0;
 }
 
 .auth-layout {
@@ -194,6 +202,7 @@ body {
 .hero-card,
 .panel {
     padding: 28px;
+    min-width: 0;
 }
 
 .hero-card h1,
@@ -202,6 +211,7 @@ body {
     margin: 8px 0 10px;
     font-size: clamp(2rem, 4vw, 3.4rem);
     line-height: 1;
+    overflow-wrap: anywhere;
 }
 
 .hero-card p,
@@ -302,6 +312,11 @@ body {
     justify-content: space-between;
     gap: 20px;
     align-items: center;
+    min-width: 0;
+}
+
+.topbar > div {
+    min-width: 0;
 }
 
 .dashboard-sidebar {
@@ -373,6 +388,7 @@ body {
 .dashboard-content {
     display: grid;
     gap: 20px;
+    min-width: 0;
 }
 
 .dashboard-section {
@@ -431,6 +447,7 @@ button {
     padding: 14px 16px;
     font: inherit;
     margin-top: 8px;
+    max-width: 100%;
 }
 
 input,
@@ -453,10 +470,73 @@ button:hover {
     background: var(--accent-dark);
 }
 
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    transform: none;
+}
+
 button.secondary {
     width: auto;
     background: var(--panel-strong);
     padding-inline: 20px;
+}
+
+.card-bind-form {
+    padding: 18px;
+    margin: 0 0 20px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(31, 58, 95, 0.05);
+}
+
+.card-bind-form h4 {
+    margin: 0 0 14px;
+    color: var(--panel-strong);
+    font-size: 1rem;
+}
+
+.card-fields {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.bound-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 18px;
+    margin-bottom: 18px;
+    border-radius: 18px;
+    background: linear-gradient(145deg, var(--panel-strong), var(--navy-soft));
+    color: #fff7ef;
+    min-width: 0;
+}
+
+.bound-card strong,
+.bound-card small {
+    display: block;
+}
+
+.bound-card span,
+.bound-card small {
+    color: rgba(255, 247, 239, 0.76);
+}
+
+.card-delete-form {
+    margin: 0;
+}
+
+.card-delete-form button {
+    margin-top: 0;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.card-delete-form button:hover {
+    background: rgba(255, 255, 255, 0.22);
 }
 
 .info-banner {
@@ -563,11 +643,14 @@ button.secondary {
 
 .table-wrapper {
     overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 680px;
 }
 
 th,
@@ -586,6 +669,7 @@ th {
     display: flex;
     gap: 10px;
     align-items: center;
+    min-width: 240px;
 }
 
 .inline-form select,
@@ -618,21 +702,42 @@ th {
     gap: 14px;
 }
 
+@media (max-width: 1180px) {
+    .landing-page {
+        padding: 28px 16px 44px;
+    }
+
+    .dashboard-layout {
+        width: min(100%, calc(100% - 32px));
+        grid-template-columns: 240px minmax(0, 1fr);
+        gap: 18px;
+        padding-inline: 0;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 980px) {
     .landing-shell,
     .auth-layout,
     .dashboard-layout,
-    .role-grid,
-    .stats-grid {
+    .role-grid {
         grid-template-columns: 1fr;
+    }
+
+    .auth-page {
+        padding: 16px;
     }
 
     .landing-hero {
         min-height: auto;
+        border-radius: 28px;
     }
 
     .hero-copy {
-        padding: 34px 24px 120px;
+        padding: 34px 24px 88px;
     }
 
     .credential-list--compact {
@@ -648,14 +753,34 @@ th {
     }
 
     .dashboard-layout {
-        padding-inline: 0;
+        width: min(100%, calc(100% - 24px));
+        gap: 16px;
     }
 
     .dashboard-sidebar {
         position: static;
+        padding: 18px;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .sidebar-link {
+        flex: 0 0 auto;
+        min-height: 48px;
+        white-space: nowrap;
     }
 
     .overview-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-fields {
         grid-template-columns: 1fr;
     }
 
@@ -671,5 +796,275 @@ th {
     .topbar {
         flex-direction: column;
         align-items: flex-start;
+        width: min(100%, calc(100% - 24px));
+        margin-top: 12px;
+    }
+
+    .topbar form,
+    .topbar .secondary {
+        width: 100%;
+    }
+}
+
+@media (max-width: 720px) {
+    :root {
+        --radius: 20px;
+        --shadow: 0 16px 36px rgba(24, 34, 49, 0.1);
+    }
+
+    .landing-page,
+    .auth-page {
+        padding: 12px;
+    }
+
+    .landing-hero {
+        border-radius: 22px;
+    }
+
+    .landing-hero--full {
+        min-height: calc(100vh - 24px);
+    }
+
+    .hero-copy {
+        padding: 26px 18px 42px;
+    }
+
+    .hero-card,
+    .panel {
+        padding: 20px;
+    }
+
+    .hero-action {
+        width: 100%;
+        min-width: 0;
+        min-height: 52px;
+    }
+
+    .credential-list div,
+    .auth-feature-list div,
+    .room-card,
+    .notification,
+    .card-bind-form,
+    .bound-card {
+        border-radius: 14px;
+    }
+
+    .auth-layout {
+        gap: 12px;
+    }
+
+    .auth-visual {
+        border-radius: 22px;
+    }
+
+    .auth-visual__content h1 {
+        line-height: 1.03;
+    }
+
+    .auth-feature-list {
+        gap: 8px;
+    }
+
+    .auth-form-card {
+        padding: 22px 18px;
+    }
+
+    .inline-link-row,
+    .bound-card,
+    .inline-form {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .card-delete-form,
+    .card-delete-form button {
+        width: 100%;
+    }
+
+    .dashboard-layout {
+        width: min(100%, calc(100% - 16px));
+        padding-bottom: 18px;
+    }
+
+    .dashboard-sidebar {
+        border-radius: 18px;
+    }
+
+    .sidebar-profile {
+        display: none;
+    }
+
+    .section-heading h2 {
+        font-size: clamp(1.55rem, 8vw, 2.15rem);
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .stat-card {
+        padding: 18px;
+    }
+
+    .stat-card strong {
+        font-size: 1.65rem;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+        min-height: 48px;
+        border-radius: 12px;
+        padding: 12px 14px;
+    }
+
+    textarea {
+        min-height: 120px;
+    }
+
+    .table-wrapper {
+        overflow: visible;
+    }
+
+    table,
+    thead,
+    tbody,
+    tr,
+    th,
+    td {
+        display: block;
+    }
+
+    table {
+        min-width: 0;
+    }
+
+    thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    tbody {
+        display: grid;
+        gap: 12px;
+    }
+
+    tr {
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: rgba(255, 253, 249, 0.78);
+    }
+
+    td {
+        display: grid;
+        grid-template-columns: minmax(104px, 42%) minmax(0, 1fr);
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        overflow-wrap: anywhere;
+    }
+
+    td:last-child {
+        border-bottom: 0;
+    }
+
+    td::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-weight: 800;
+    }
+
+    td.action-cell {
+        display: grid;
+    }
+
+    td.action-cell::before {
+        margin-bottom: 2px;
+    }
+
+    .inline-form {
+        min-width: 0;
+        width: 100%;
+        gap: 8px;
+    }
+
+    .inline-form select,
+    .inline-form button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .eyebrow,
+    .panel-kicker {
+        font-size: 0.68rem;
+        line-height: 1.3;
+    }
+
+    .hero-card h1,
+    .landing-hero h1,
+    .topbar h1 {
+        font-size: clamp(1.7rem, 11vw, 2.35rem);
+        line-height: 1.05;
+    }
+
+    .landing-hero p,
+    .topbar p,
+    .auth-visual__content p,
+    .hero-lead {
+        font-size: 1rem;
+        line-height: 1.55;
+    }
+
+    .auth-visual__content {
+        padding: 22px 18px;
+    }
+
+    .auth-visual__content h1 {
+        font-size: clamp(2rem, 12vw, 2.9rem);
+    }
+
+    .topbar,
+    .dashboard-layout {
+        width: min(100%, calc(100% - 12px));
+    }
+
+    .dashboard-sidebar,
+    .hero-card,
+    .panel {
+        padding: 16px;
+    }
+
+    .sidebar-link {
+        padding: 12px 14px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+    }
+
+    .nav-badge {
+        min-width: 22px;
+        height: 22px;
+        font-size: 0.78rem;
+    }
+
+    .card-fields {
+        gap: 0;
+    }
+
+    td {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .info-banner {
+        padding: 12px 14px;
+        border-radius: 12px;
     }
 }
